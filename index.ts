@@ -95,7 +95,13 @@ class Hashmap implements IStorage {
         
         return hash % this.#size;
     }
-
-
+    
+    #getBucket(key: string): Bucket {
+        const bucketIndex: number = this.#hash(key);
+        if (!this.#buckets[bucketIndex]) {
+            this.#buckets[bucketIndex] = [];
+        }
+        return this.#buckets[bucketIndex];
+    }
 
 }
