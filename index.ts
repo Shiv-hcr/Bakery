@@ -23,9 +23,9 @@ class Storage implements IStorage {
     #initialiseStorage(type: StorageType): StorageObject {
         switch (type) {
             case "local": 
-                //return new BrowserStorage(localStorage);
+                return new BrowserStorage(localStorage);
             case "session":
-                //return new BrowserStorage(sessionStorage);
+                return new BrowserStorage(sessionStorage);
             case "hashmap":
                 return new Hashmap();
             default:
@@ -34,7 +34,37 @@ class Storage implements IStorage {
         }
     }
 
+    setItem(key: string, value: string): void {
+        this.#storage.setItem(key, value);
+        this.#keyCache.add(key);
+    }
 
+    getItem(key: string): string | null {
+        if (this.#keyCache.has(key)) {
+            return this.#storage.getItem(key);
+        }
+        return null;
+    }
+
+    removeItem(key: string): void {
+        if (this.#keyCache.has(key)) {
+            this.#storage.removeItem(key);
+            this.#keyCache.delete(key);
+        }
+    }
+
+    clear(): void {
+        this.#storage.clear();
+        this.#keyCache.clear();
+    }
+
+    keyExists(key: string): boolean {
+        return this.#keyCache.has(key);
+    }
+
+    keys(): string[] {
+        return Array.from(this.#keyCache);
+    }
 }
 
 class BrowserStorage implements IStorage {
@@ -185,4 +215,13 @@ class Hashmap implements IStorage {
     keys(): string[] {
         return this.#buckets.flat().map(([key]) => key);
     }
+}
+
+class Bakery {
+    #storage: IStorage;
+
+    constructor(storageType: StorageType) {
+        this.#storage = new Storage(storageType);
+    }
+
 }
