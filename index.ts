@@ -11,7 +11,7 @@ interface IStorage {
     keys(): string[];
 }
 
-class Storage implements IStorage {
+class CentralisedStorage implements IStorage {
 
     #storage: StorageObject;
     #keyCache: Set<string> = new Set();
@@ -68,9 +68,9 @@ class Storage implements IStorage {
 }
 
 class BrowserStorage implements IStorage {
-    #storage: Storage;
+    #storage: CentralisedStorage;
 
-    constructor(storage: Storage) {
+    constructor(storage: CentralisedStorage) {
         this.#storage = storage;
     }
 
@@ -218,10 +218,29 @@ class Hashmap implements IStorage {
 }
 
 class Bakery {
-    #storage: IStorage;
+    #storage: CentralisedStorage;
 
     constructor(storageType: StorageType) {
-        this.#storage = new Storage(storageType);
+        this.#storage = new CentralisedStorage(storageType);
     }
 
+    set(key: string, value: string): void {
+        this.#storage.setItem(key, value);
+    }
+
+    get(key: string): string | null {
+        return this.#storage.getItem(key);
+    }
+
+    remove(key: string): void {
+        this.#storage.removeItem(key);
+    }
+
+    clear(): void {
+        this.#storage.clear();
+    }
+
+    keys(): string[] {
+        return this.#storage.keys();
+    }
 }
