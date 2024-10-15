@@ -3,7 +3,7 @@ type StorageObject = IStorage;
 type Bucket = [string, string][];
 
 interface IStorage {
-    //setItem(key: string, value: string): void;
+    setItem(key: string, value: string): void;
     //getItem(key: string): string | null;
     //removeItem(key: string): void;
     //clear(): void;
@@ -30,7 +30,7 @@ class Storage implements IStorage {
                 //return new Hashmap();
             default:
                 console.warn(`Invalid storage type: "${type}". Defaulting to Hashmap`);
-                //return new Hashmap();
+                return new Hashmap();
         }
     }
 }
@@ -102,6 +102,20 @@ class Hashmap implements IStorage {
             this.#buckets[bucketIndex] = [];
         }
         return this.#buckets[bucketIndex];
+    }
+
+    setItem(keyName: string, keyValue: string): void {
+        const bucket: Bucket = this.#getBucket(keyName);
+        for (let i = 0; i < bucket.length; i++) {
+            const [key, val] = bucket[i];
+            if (key === keyName) {
+                bucket[i] = [keyName, keyValue];
+                return;
+            }
+        }
+        bucket.push([keyName, keyValue]);
+        this.#count++;
+        this.#checkLoadFactor();
     }
 
 }
