@@ -23,9 +23,9 @@ class CentralisedStorage implements IStorage {
     #initialiseStorage(type: StorageType): StorageObject {
         switch (type) {
             case "local": 
-                return new BrowserStorage(localStorage);
+                return new BrowserStorage(localStorage); // Need to fix type error here
             case "session":
-                return new BrowserStorage(sessionStorage);
+                return new BrowserStorage(sessionStorage); // and here
             case "hashmap":
                 return new Hashmap();
             default:
