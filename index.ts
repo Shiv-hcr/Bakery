@@ -6,9 +6,9 @@ interface IStorage {
     setItem(key: string, value: string): void;
     getItem(key: string): string | null;
     removeItem(key: string): void;
-    //clear(): void;
-    //keyExists(key: string): boolean;
-    //keys(): string[];
+    clear(): void;
+    keyExists(key: string): boolean;
+    keys(): string[];
 }
 
 class Storage implements IStorage {
@@ -27,7 +27,7 @@ class Storage implements IStorage {
             case "session":
                 //return new BrowserStorage(sessionStorage);
             case "hashmap":
-                //return new Hashmap();
+                return new Hashmap();
             default:
                 console.warn(`Invalid storage type: "${type}". Defaulting to Hashmap`);
                 return new Hashmap();
@@ -107,7 +107,7 @@ class Hashmap implements IStorage {
     setItem(keyName: string, keyValue: string): void {
         const bucket: Bucket = this.#getBucket(keyName);
         for (let i = 0; i < bucket.length; i++) {
-            const [key, val] = bucket[i];
+            const [key] = bucket[i];
             if (key === keyName) {
                 bucket[i] = [keyName, keyValue];
                 return;
@@ -130,7 +130,7 @@ class Hashmap implements IStorage {
     removeItem(keyName: string): void {
         const bucket: Bucket = this.#getBucket(keyName);
         for (let i = 0; i < bucket.length; i++) {
-            const [key, val] = bucket[i];
+            const [key] = bucket[i];
             if (key === keyName) {
                 bucket.splice(i, 1);
                 this.#count--;
@@ -140,4 +140,15 @@ class Hashmap implements IStorage {
         }
     }
 
+    clear(): void {
+        this.#buckets = this.#new(this.#initialSize);
+    }
+
+    keyExists(keyName: string): boolean {
+        return this.getItem(keyName) !== null;
+    }
+
+    keys(): string[] {
+        return this.#buckets.flat().map(([key]) => key);
+    }
 }
