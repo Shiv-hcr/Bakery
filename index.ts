@@ -33,6 +33,40 @@ class Storage implements IStorage {
                 return new Hashmap();
         }
     }
+
+
+}
+
+class BrowserStorage implements IStorage {
+    #storage: Storage;
+
+    constructor(storage: Storage) {
+        this.#storage = storage;
+    }
+
+    setItem(key: string, value: string): void {
+        this.#storage.setItem(key, value);
+    }
+
+    getItem(key: string): string | null {
+        return this.#storage.getItem(key);
+    }
+
+    removeItem(key: string): void {
+        this.#storage.removeItem(key);
+    }
+
+    clear(): void {
+        this.#storage.clear();
+    }
+
+    keyExists(key: string): boolean {
+        return this.#storage.getItem(key) !== null;
+    }
+
+    keys(): string[] {
+        return Object.keys(this.#storage);
+    }
 }
 
 class Hashmap implements IStorage {
