@@ -4,7 +4,7 @@ type Bucket = [string, string][];
 
 interface IStorage {
     setItem(key: string, value: string): void;
-    //getItem(key: string): string | null;
+    getItem(key: string): string | null;
     //removeItem(key: string): void;
     //clear(): void;
     //keyExists(key: string): boolean;
@@ -116,6 +116,15 @@ class Hashmap implements IStorage {
         bucket.push([keyName, keyValue]);
         this.#count++;
         this.#checkLoadFactor();
+    }
+
+    getItem(keyName: string): string | null {
+        const bucket: Bucket = this.#getBucket(keyName);
+        for (let i = 0; i < bucket.length; i++) {
+            const [key, val] = bucket[i];
+            if (key === keyName) return val;
+        }
+        return null;
     }
 
 }
